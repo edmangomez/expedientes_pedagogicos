@@ -52,9 +52,9 @@ export function StudentsWorkspace({
 
   return (
     <section className="grid gap-5">
-      <div className="rounded-xl border border-stone-200 bg-white p-4 shadow-sm">
-        <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
-          <div className="grid flex-1 gap-3 md:grid-cols-2 xl:grid-cols-5">
+      <div className="rounded-2xl border border-stone-200 bg-white p-4 shadow-sm sm:p-5">
+        <div className="grid gap-4">
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-[minmax(18rem,1.5fr)_repeat(4,minmax(9rem,1fr))]">
             <label className="md:col-span-2 xl:col-span-1">
               <span className="text-sm font-medium text-stone-700">Buscar</span>
               <span className="mt-2 flex min-h-11 items-center gap-2 rounded-lg border border-stone-200 px-3 focus-within:border-stone-500 focus-within:ring-4 focus-within:ring-stone-200">
@@ -72,11 +72,13 @@ export function StudentsWorkspace({
             <Filter label="Docente guía" value={teacher} onChange={setTeacher} options={teachers} />
             <Filter label="Estado" value={status} onChange={setStatus} options={statuses.map((item) => ({ value: item, label: enumLabel(item) }))} />
           </div>
-          <div className="flex flex-wrap gap-2">
-            <ViewButton active={view === "cards"} onClick={() => setView("cards")} icon={Grid2X2} label="Tarjetas" />
-            <ViewButton active={view === "table"} onClick={() => setView("table")} icon={Table2} label="Tabla" />
-            <ViewButton active={view === "folders"} onClick={() => setView("folders")} icon={LayoutList} label="Carpetas" />
-            <Link href="/students/new" className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-stone-950 px-4 text-sm font-semibold text-white hover:bg-stone-800">
+          <div className="flex flex-col gap-3 border-t border-stone-100 pt-4 lg:flex-row lg:items-center lg:justify-between">
+            <div className="grid grid-cols-3 gap-2 sm:flex sm:flex-wrap">
+              <ViewButton active={view === "cards"} onClick={() => setView("cards")} icon={Grid2X2} label="Tarjetas" />
+              <ViewButton active={view === "table"} onClick={() => setView("table")} icon={Table2} label="Tabla" />
+              <ViewButton active={view === "folders"} onClick={() => setView("folders")} icon={LayoutList} label="Carpetas" />
+            </div>
+            <Link href="/students/new" className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-stone-950 px-4 text-sm font-semibold text-white hover:bg-stone-800 sm:w-auto">
               <Plus className="h-4 w-4" aria-hidden="true" />
               Agregar estudiante
             </Link>

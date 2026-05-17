@@ -12,7 +12,6 @@ import {
   studentSchema,
 } from "@/lib/validations";
 import { calculateChronologicalAge } from "@/lib/utils";
-import type { Prisma } from "@prisma/client";
 
 function readForm(formData: FormData) {
   return Object.fromEntries(formData.entries());
@@ -161,41 +160,6 @@ export async function deleteProgressAction(studentId: string, progressId: string
   await touchStudent(studentId);
   revalidatePath(`/students/${studentId}`);
   redirect(`/students/${studentId}?deleted=progress#avances`);
-}
-
-export async function seedDemoDataAction() {
-  const existing = await prisma.student.count();
-  if (existing > 0) {
-    redirect("/students");
-  }
-
-  const students: Prisma.StudentCreateInput[] = [
-    {
-      fullName: "Mariana López Pérez",
-      admissionDate: new Date("2026-01-15"),
-      birthDate: new Date("2017-08-10"),
-      gradeSection: "3ro A",
-      diagnosis: "Lectoescritura en seguimiento",
-      chronologicalAge: "8 años, 9 meses",
-      teacherName: "Profa. Elena Ramírez",
-      status: "IN_PROCESS",
-    },
-    {
-      fullName: "Diego Morales Soto",
-      admissionDate: new Date("2026-02-03"),
-      birthDate: new Date("2016-11-22"),
-      gradeSection: "4to B",
-      diagnosis: "Requiere refuerzo lector",
-      chronologicalAge: "9 años, 5 meses",
-      teacherName: "Prof. Carlos Méndez",
-      status: "PENDING_PLANS",
-    },
-  ];
-
-  await prisma.student.createMany({ data: students });
-  revalidatePath("/dashboard");
-  revalidatePath("/students");
-  redirect("/students?seeded=1");
 }
 
 async function touchStudent(studentId: string) {

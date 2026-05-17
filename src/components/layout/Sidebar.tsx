@@ -37,11 +37,6 @@ export function Sidebar() {
           );
         })}
       </nav>
-
-      <div className="mt-auto rounded-xl border border-stone-200 bg-white p-4 text-sm text-stone-600">
-        <p className="font-semibold text-stone-900">Privacidad primero</p>
-        <p className="mt-1 leading-6">Usa datos ficticios para pruebas y evita registrar información sensible innecesaria.</p>
-      </div>
     </aside>
   );
 }

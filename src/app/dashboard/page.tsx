@@ -3,8 +3,6 @@ import { ClipboardCheck, FileClock, FolderKanban, Plus, Users } from "lucide-rea
 import { AppShell } from "@/components/layout/AppShell";
 import { Breadcrumbs } from "@/components/layout/Breadcrumbs";
 import { StudentCard } from "@/components/students/StudentCard";
-import { SubmitButton } from "@/components/ui/SubmitButton";
-import { seedDemoDataAction } from "@/lib/actions";
 import { getDashboardStats, getStudents } from "@/lib/queries";
 import { StudentsWorkspace } from "@/components/students/StudentsWorkspace";
 
@@ -31,11 +29,6 @@ export default async function DashboardPage() {
               <Plus className="h-4 w-4" aria-hidden="true" />
               Agregar estudiante
             </Link>
-            {stats.total === 0 && (
-              <form action={seedDemoDataAction}>
-                <SubmitButton variant="secondary">Cargar demo ficticio</SubmitButton>
-              </form>
-            )}
           </div>
         </section>
 
