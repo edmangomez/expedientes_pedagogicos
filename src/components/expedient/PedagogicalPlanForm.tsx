@@ -1,4 +1,4 @@
-import { FileText, Trash2 } from "lucide-react";
+import { FileText, Paperclip, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
 import { Field, SelectField, TextAreaField } from "@/components/ui/Field";
 import { SubmitButton } from "@/components/ui/SubmitButton";
@@ -25,10 +25,29 @@ export function PedagogicalPlanForm({ student }: { student: StudentWithRelations
           <TextAreaField label="Estrategias a utilizar" name="strategies" rows={3} />
           <TextAreaField label="Recursos necesarios" name="resources" rows={3} />
         </div>
-        <div className="grid gap-4 rounded-lg border border-dashed border-stone-300 bg-white p-4 md:grid-cols-3">
-          <Field label="Nombre del archivo" name="attachmentName" helper="Ej. plan-primer-parcial.pdf" />
-          <Field label="Tipo de archivo" name="attachmentType" helper="PDF, Word o imagen" />
-          <Field label="URL o ruta simulada" name="attachmentUrl" helper="Preparado para Supabase Storage." />
+        <div className="rounded-xl border border-dashed border-stone-300 bg-white p-4">
+          <div className="mb-4 flex items-start gap-3">
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-stone-100 text-stone-600">
+              <Paperclip className="h-5 w-5" aria-hidden="true" />
+            </span>
+            <div>
+              <h3 className="font-semibold text-stone-950">Adjunto opcional del plan</h3>
+              <p className="mt-1 text-sm leading-6 text-stone-500">
+                Sube un documento de apoyo para este plan, como PDF, Word o imagen. El archivo quedara guardado localmente
+                y podras abrirlo despues desde la lista de adjuntos del expediente.
+              </p>
+            </div>
+          </div>
+          <label className="grid gap-2 text-sm font-medium text-stone-800">
+            <span>Documento para subir</span>
+            <input
+              name="attachmentFile"
+              type="file"
+              accept=".pdf,.doc,.docx,image/png,image/jpeg,image/webp"
+              className="min-h-11 rounded-lg border border-stone-200 bg-white px-3 py-2 text-base text-stone-900 outline-none transition file:mr-4 file:rounded-md file:border-0 file:bg-stone-950 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-stone-800 focus:border-stone-500 focus:ring-4 focus:ring-stone-200"
+            />
+            <span className="text-xs font-normal text-stone-500">Formatos permitidos: PDF, Word, JPG, PNG o WebP. Tamano maximo: 10 MB.</span>
+          </label>
         </div>
         <div className="flex justify-end">
           <SubmitButton>Agregar plan</SubmitButton>

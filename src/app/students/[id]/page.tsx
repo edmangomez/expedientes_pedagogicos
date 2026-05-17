@@ -7,6 +7,7 @@ import { ExpedientHeader } from "@/components/expedient/ExpedientHeader";
 import { ExpedientSection } from "@/components/expedient/ExpedientSection";
 import { InattentionEvaluationForm } from "@/components/expedient/InattentionEvaluationForm";
 import { InternalNav } from "@/components/expedient/InternalNav";
+import { MathEvaluationForm } from "@/components/expedient/MathEvaluationForm";
 import { PedagogicalPlanForm } from "@/components/expedient/PedagogicalPlanForm";
 import { ProgressRecordForm } from "@/components/expedient/ProgressRecordForm";
 import { StudentGeneralForm } from "@/components/expedient/StudentGeneralForm";
@@ -46,7 +47,7 @@ export default async function StudentExpedientPage({
         <div className="grid gap-6 xl:grid-cols-[220px_1fr]">
           <InternalNav />
           <div className="grid gap-5">
-            <ExpedientSection id="datos-generales" title="Datos generales" description="Información base editable del estudiante.">
+            <ExpedientSection id="datos-generales" title="Datos generales" description="Informacion base del estudiante en modo lectura.">
               <StudentGeneralForm student={student} />
             </ExpedientSection>
             <ExpedientSection id="diagnostico" title="Evaluación diagnóstica - Lectoescritura" description="Observaciones por ítem y fecha de evaluación.">
@@ -57,6 +58,9 @@ export default async function StudentExpedientPage({
             </ExpedientSection>
             <ExpedientSection id="inatencion" title="Evaluación de inatención" description="Escala y observaciones de atención.">
               <InattentionEvaluationForm student={student} />
+            </ExpedientSection>
+            <ExpedientSection id="matematicas" title="Matematicas" description="Observaciones sobre habilidades numericas, operaciones y resolucion de problemas.">
+              <MathEvaluationForm student={student} />
             </ExpedientSection>
             <ExpedientSection id="planes" title="Plan de aula pedagógica" description="Planes por parcial y archivos adjuntos simulados.">
               <PedagogicalPlanForm student={student} />
@@ -70,3 +74,4 @@ export default async function StudentExpedientPage({
     </AppShell>
   );
 }
+

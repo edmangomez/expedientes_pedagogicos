@@ -27,7 +27,8 @@ export function ProgressRecordForm({ student }: { student: StudentWithRelations 
           <TextAreaField label="Avance observado" name="observedProgress" rows={3} />
           <TextAreaField label="Dificultades encontradas" name="difficulties" rows={3} />
           <TextAreaField label="Estrategias aplicadas" name="appliedStrategies" rows={3} />
-          <TextAreaField label="Recomendaciones" name="recommendations" rows={3} />
+          <TextAreaField label="Recomendaciones de casa" name="recommendations" rows={3} />
+          <TextAreaField label="Recomendaciones para adecuacion en el aula" name="classroomRecommendations" rows={3} />
         </div>
         <div className="flex justify-end">
           <SubmitButton>Guardar avance</SubmitButton>
@@ -59,7 +60,8 @@ export function ProgressRecordForm({ student }: { student: StudentWithRelations 
                 {record.observedProgress && <p><strong>Avance:</strong> {record.observedProgress}</p>}
                 {record.difficulties && <p><strong>Dificultades:</strong> {record.difficulties}</p>}
                 {record.appliedStrategies && <p><strong>Estrategias:</strong> {record.appliedStrategies}</p>}
-                {record.recommendations && <p><strong>Recomendaciones:</strong> {record.recommendations}</p>}
+                {record.recommendations && <p><strong>Recomendaciones de casa:</strong> {record.recommendations}</p>}
+                {record.classroomRecommendations && <p><strong>Recomendaciones para adecuacion en el aula:</strong> {record.classroomRecommendations}</p>}
               </div>
             </article>
           ))

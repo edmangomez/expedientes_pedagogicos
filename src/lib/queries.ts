@@ -30,6 +30,7 @@ export async function getStudentById(id: string) {
       diagnosticEvaluation: true,
       behaviorEvaluation: true,
       inattentionEvaluation: true,
+      mathEvaluation: true,
       pedagogicalPlans: {
         orderBy: [{ partial: "asc" }, { updatedAt: "desc" }],
         include: { attachments: true },

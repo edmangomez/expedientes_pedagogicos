@@ -63,6 +63,17 @@ export const inattentionSchema = z.object({
   generalObservations: optionalText,
 });
 
+export const mathSchema = z.object({
+  numberRecognitionObservation: optionalText,
+  countingObservation: optionalText,
+  basicOperationsObservation: optionalText,
+  problemSolvingObservation: optionalText,
+  quantityConceptObservation: optionalText,
+  sequencesPatternsObservation: optionalText,
+  geometricShapesObservation: optionalText,
+  generalObservations: optionalText,
+});
+
 export const planSchema = z.object({
   partial: z.enum(["FIRST", "SECOND", "THIRD", "FOURTH"]),
   title: z.string().trim().min(2, "Escribe un título para el plan."),
@@ -71,9 +82,6 @@ export const planSchema = z.object({
   strategies: optionalText,
   resources: optionalText,
   creationDate: optionalDate,
-  attachmentName: z.string().trim().max(180).optional().transform((value) => value || null),
-  attachmentType: z.string().trim().max(80).optional().transform((value) => value || null),
-  attachmentUrl: z.string().trim().max(500).optional().transform((value) => value || null),
 });
 
 export const progressSchema = z.object({
@@ -83,6 +91,7 @@ export const progressSchema = z.object({
   difficulties: optionalText,
   appliedStrategies: optionalText,
   recommendations: optionalText,
+  classroomRecommendations: optionalText,
   progressStatus: z.enum(["NOT_STARTED", "IN_PROGRESS", "SIGNIFICANT_PROGRESS", "NEEDS_REINFORCEMENT"]),
 });
 

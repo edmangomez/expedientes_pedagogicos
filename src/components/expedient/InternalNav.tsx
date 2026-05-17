@@ -5,6 +5,7 @@ const sections = [
   ["diagnostico", "Evaluación diagnóstica"],
   ["conducta", "Conducta en evaluación"],
   ["inatencion", "Evaluación de inatención"],
+  ["matematicas", "Matematicas"],
   ["planes", "Plan de aula pedagógica"],
   ["avances", "Avances por parcial"],
 ];

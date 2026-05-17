@@ -29,6 +29,7 @@ model Student {
   diagnosticEvaluation DiagnosticEvaluation?
   behaviorEvaluation   BehaviorEvaluation?
   inattentionEvaluation InattentionEvaluation?
+  mathEvaluation       MathEvaluation?
   pedagogicalPlans     PedagogicalPlan[]
   progressRecords      ProgressRecord[]
   attachments          Attachment[]
@@ -104,6 +105,25 @@ model InattentionEvaluation {
   @@index([studentId])
 }
 
+model MathEvaluation {
+  id                          String   @id @default(cuid())
+  studentId                   String   @unique
+  numberRecognitionObservation String?
+  countingObservation         String?
+  basicOperationsObservation  String?
+  problemSolvingObservation   String?
+  quantityConceptObservation  String?
+  sequencesPatternsObservation String?
+  geometricShapesObservation  String?
+  generalObservations         String?
+  createdAt                   DateTime @default(now())
+  updatedAt                   DateTime @updatedAt
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@index([studentId])
+}
+
 model PedagogicalPlan {
   id           String    @id @default(cuid())
   studentId    String
@@ -133,6 +153,7 @@ model ProgressRecord {
   difficulties      String?
   appliedStrategies String?
   recommendations   String?
+  classroomRecommendations String?
   progressStatus    String         @default("NOT_STARTED")
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt

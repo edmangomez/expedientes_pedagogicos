@@ -69,6 +69,22 @@ CREATE TABLE IF NOT EXISTS "InattentionEvaluation" (
   CONSTRAINT "InattentionEvaluation_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "Student" ("id") ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS "MathEvaluation" (
+  "id" TEXT NOT NULL PRIMARY KEY,
+  "studentId" TEXT NOT NULL,
+  "numberRecognitionObservation" TEXT,
+  "countingObservation" TEXT,
+  "basicOperationsObservation" TEXT,
+  "problemSolvingObservation" TEXT,
+  "quantityConceptObservation" TEXT,
+  "sequencesPatternsObservation" TEXT,
+  "geometricShapesObservation" TEXT,
+  "generalObservations" TEXT,
+  "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT "MathEvaluation_studentId_fkey" FOREIGN KEY ("studentId") REFERENCES "Student" ("id") ON DELETE CASCADE ON UPDATE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS "PedagogicalPlan" (
   "id" TEXT NOT NULL PRIMARY KEY,
   "studentId" TEXT NOT NULL,
@@ -93,6 +109,7 @@ CREATE TABLE IF NOT EXISTS "ProgressRecord" (
   "difficulties" TEXT,
   "appliedStrategies" TEXT,
   "recommendations" TEXT,
+  "classroomRecommendations" TEXT,
   "progressStatus" TEXT NOT NULL DEFAULT 'NOT_STARTED',
   "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -114,6 +131,7 @@ CREATE TABLE IF NOT EXISTS "Attachment" (
 CREATE UNIQUE INDEX IF NOT EXISTS "DiagnosticEvaluation_studentId_key" ON "DiagnosticEvaluation"("studentId");
 CREATE UNIQUE INDEX IF NOT EXISTS "BehaviorEvaluation_studentId_key" ON "BehaviorEvaluation"("studentId");
 CREATE UNIQUE INDEX IF NOT EXISTS "InattentionEvaluation_studentId_key" ON "InattentionEvaluation"("studentId");
+CREATE UNIQUE INDEX IF NOT EXISTS "MathEvaluation_studentId_key" ON "MathEvaluation"("studentId");
 CREATE INDEX IF NOT EXISTS "Student_fullName_idx" ON "Student"("fullName");
 CREATE INDEX IF NOT EXISTS "Student_gradeSection_idx" ON "Student"("gradeSection");
 CREATE INDEX IF NOT EXISTS "Student_diagnosis_idx" ON "Student"("diagnosis");
@@ -125,6 +143,7 @@ CREATE INDEX IF NOT EXISTS "PedagogicalPlan_partial_idx" ON "PedagogicalPlan"("p
 CREATE INDEX IF NOT EXISTS "ProgressRecord_studentId_idx" ON "ProgressRecord"("studentId");
 CREATE INDEX IF NOT EXISTS "ProgressRecord_partial_idx" ON "ProgressRecord"("partial");
 CREATE INDEX IF NOT EXISTS "ProgressRecord_progressStatus_idx" ON "ProgressRecord"("progressStatus");
+CREATE INDEX IF NOT EXISTS "MathEvaluation_studentId_idx" ON "MathEvaluation"("studentId");
 CREATE INDEX IF NOT EXISTS "Attachment_studentId_idx" ON "Attachment"("studentId");
 CREATE INDEX IF NOT EXISTS "Attachment_planId_idx" ON "Attachment"("planId");
 
