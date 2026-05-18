@@ -112,4 +112,21 @@ export const userSchema = z.object({
   role: z.enum(["ADMIN", "TEACHER", "READ_ONLY"]).default("ADMIN"),
 });
 
+export const backupScheduleSchema = z.object({
+  enabled: z
+    .string()
+    .optional()
+    .transform((value) => value === "on"),
+  frequency: z.enum(["DAILY", "WEEKLY", "MONTHLY"]),
+  timeOfDay: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/, "Usa una hora valida."),
+});
+
+export const backupFileSchema = z.object({
+  fileName: z.string().trim().endsWith(".backup.json"),
+});
+
+export const restoreBackupSchema = backupFileSchema.extend({
+  confirmation: z.string().trim(),
+});
+
 export type StudentFormValues = z.infer<typeof studentSchema>;

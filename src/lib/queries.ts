@@ -1,4 +1,5 @@
 import { prisma } from "@/lib/prisma";
+import { ensureScheduledBackup, getBackupSchedule, listBackups } from "@/lib/backup";
 
 export async function getStudents() {
   return prisma.student.findMany({
@@ -74,4 +75,10 @@ export async function getUsers() {
       },
     },
   });
+}
+
+export async function getBackupAdminData() {
+  await ensureScheduledBackup();
+  const [backups, schedule] = await Promise.all([listBackups(), getBackupSchedule()]);
+  return { backups, schedule };
 }

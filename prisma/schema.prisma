@@ -40,6 +40,16 @@ model Session {
   @@index([expiresAt])
 }
 
+model BackupSchedule {
+  id        String    @id
+  enabled   Boolean   @default(false)
+  frequency String    @default("DAILY")
+  timeOfDay String    @default("17:00")
+  lastRunAt DateTime?
+  nextRunAt DateTime?
+  updatedAt DateTime  @updatedAt
+}
+
 model Student {
   id               String           @id @default(cuid())
   fullName         String

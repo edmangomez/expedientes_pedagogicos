@@ -6,8 +6,11 @@ import path from "node:path";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { clearUserSession, createUserSession, hashPassword, requireAdmin, requireEditor, verifyPassword } from "@/lib/auth";
+import { createBackup, deleteBackup, restoreBackup, updateBackupSchedule } from "@/lib/backup";
 import { prisma } from "@/lib/prisma";
 import {
+  backupFileSchema,
+  backupScheduleSchema,
   behaviorSchema,
   diagnosticSchema,
   inattentionSchema,
@@ -15,6 +18,7 @@ import {
   mathSchema,
   planSchema,
   progressSchema,
+  restoreBackupSchema,
   studentSchema,
   userSchema,
 } from "@/lib/validations";
@@ -142,6 +146,46 @@ export async function toggleUserStatusAction(userId: string) {
 
   revalidatePath("/settings");
   redirect("/settings?saved=status");
+}
+
+export async function createManualBackupAction() {
+  await requireAdmin();
+  await createBackup("manual");
+
+  revalidatePath("/settings");
+  redirect("/settings?saved=backup");
+}
+
+export async function updateBackupScheduleAction(formData: FormData) {
+  await requireAdmin();
+  const data = validate(backupScheduleSchema, readForm(formData));
+  await updateBackupSchedule(data);
+
+  revalidatePath("/settings");
+  redirect("/settings?saved=schedule");
+}
+
+export async function restoreBackupAction(formData: FormData) {
+  await requireAdmin();
+  const data = validate(restoreBackupSchema, readForm(formData));
+  if (data.confirmation !== "RESTAURAR") {
+    redirect("/settings?error=restore-confirmation");
+  }
+
+  await createBackup("manual");
+  await restoreBackup(data.fileName);
+  await prisma.session.deleteMany();
+  await clearUserSession();
+  redirect("/login?restored=1");
+}
+
+export async function deleteBackupAction(formData: FormData) {
+  await requireAdmin();
+  const data = validate(backupFileSchema, readForm(formData));
+  await deleteBackup(data.fileName);
+
+  revalidatePath("/settings");
+  redirect("/settings?saved=delete-backup");
 }
 
 export async function createStudentAction(formData: FormData) {
