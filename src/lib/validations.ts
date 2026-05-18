@@ -95,4 +95,21 @@ export const progressSchema = z.object({
   progressStatus: z.enum(["NOT_STARTED", "IN_PROGRESS", "SIGNIFICANT_PROGRESS", "NEEDS_REINFORCEMENT"]),
 });
 
+export const loginSchema = z.object({
+  username: z.string().trim().min(1, "Escribe el usuario."),
+  password: z.string().min(1, "Escribe la contrasena."),
+});
+
+export const userSchema = z.object({
+  name: z.string().trim().min(2, "Escribe el nombre del usuario."),
+  username: z
+    .string()
+    .trim()
+    .min(3, "El usuario debe tener al menos 3 caracteres.")
+    .max(40, "El usuario no puede superar 40 caracteres.")
+    .regex(/^[a-zA-Z0-9._-]+$/, "Usa solo letras, numeros, punto, guion o guion bajo."),
+  password: z.string().min(8, "La contrasena debe tener al menos 8 caracteres."),
+  role: z.enum(["ADMIN", "TEACHER", "READ_ONLY"]).default("ADMIN"),
+});
+
 export type StudentFormValues = z.infer<typeof studentSchema>;

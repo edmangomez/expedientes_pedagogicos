@@ -54,3 +54,24 @@ export async function getDashboardStats() {
 
   return { total, complete, inProcess, pendingPlans, recent };
 }
+
+export async function getUserCount() {
+  return prisma.user.count();
+}
+
+export async function getUsers() {
+  return prisma.user.findMany({
+    orderBy: { createdAt: "desc" },
+    select: {
+      id: true,
+      name: true,
+      username: true,
+      role: true,
+      isActive: true,
+      createdAt: true,
+      _count: {
+        select: { sessions: true },
+      },
+    },
+  });
+}

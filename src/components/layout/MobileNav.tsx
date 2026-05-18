@@ -1,8 +1,10 @@
-"use client";
+﻿"use client";
 
 import Link from "next/link";
-import { FolderOpen, Gauge, GraduationCap, Menu, Settings } from "lucide-react";
+import { FolderOpen, Gauge, GraduationCap, LogOut, Menu, Settings } from "lucide-react";
 import { useState } from "react";
+import { logoutAction } from "@/lib/actions";
+import type { CurrentUser } from "@/lib/auth";
 
 const items = [
   { href: "/dashboard", label: "Dashboard", icon: Gauge },
@@ -11,7 +13,7 @@ const items = [
   { href: "/settings", label: "Ajustes", icon: Settings },
 ];
 
-export function MobileNav() {
+export function MobileNav({ user }: { user: CurrentUser }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -22,11 +24,15 @@ export function MobileNav() {
         className="flex min-h-14 w-full items-center justify-between px-4 text-sm font-semibold text-stone-900"
         aria-expanded={open}
       >
-        <span>Expedientes Pedagógicos</span>
+        <span>Expedientes Pedagogicos</span>
         <Menu className="h-5 w-5" aria-hidden="true" />
       </button>
       {open && (
-        <nav className="grid gap-1 px-3 pb-3" aria-label="Navegación móvil">
+        <nav className="grid gap-1 px-3 pb-3" aria-label="Navegacion movil">
+          <div className="rounded-xl border border-stone-200 bg-white px-3 py-2 text-sm">
+            <p className="font-semibold text-stone-950">{user.name}</p>
+            <p className="text-xs text-stone-500">@{user.username}</p>
+          </div>
           {items.map((item) => {
             const Icon = item.icon;
             return (
@@ -41,6 +47,15 @@ export function MobileNav() {
               </Link>
             );
           })}
+          <form action={logoutAction}>
+            <button
+              type="submit"
+              className="flex min-h-11 w-full items-center gap-3 rounded-lg px-3 text-sm font-medium text-stone-700 hover:bg-white"
+            >
+              <LogOut className="h-4 w-4" aria-hidden="true" />
+              Cerrar sesion
+            </button>
+          </form>
         </nav>
       )}
     </div>

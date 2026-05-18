@@ -5,15 +5,18 @@ import { mkdir, unlink, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { clearUserSession, createUserSession, hashPassword, requireAdmin, requireEditor, verifyPassword } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import {
   behaviorSchema,
   diagnosticSchema,
   inattentionSchema,
+  loginSchema,
   mathSchema,
   planSchema,
   progressSchema,
   studentSchema,
+  userSchema,
 } from "@/lib/validations";
 import { calculateChronologicalAge } from "@/lib/utils";
 
@@ -40,7 +43,109 @@ function validate<T>(schema: { safeParse: (value: unknown) => { success: true; d
   return parsed.data;
 }
 
+export type AuthActionState = {
+  error?: string;
+};
+
+export async function loginAction(_state: AuthActionState, formData: FormData): Promise<AuthActionState> {
+  const parsed = loginSchema.safeParse(readForm(formData));
+  if (!parsed.success) {
+    return { error: "Escribe tu usuario y contrasena." };
+  }
+
+  const user = await prisma.user.findUnique({ where: { username: parsed.data.username } });
+  if (!user || !user.isActive) {
+    return { error: "Usuario o contrasena incorrectos." };
+  }
+
+  const isValid = await verifyPassword(parsed.data.password, user.passwordHash);
+  if (!isValid) {
+    return { error: "Usuario o contrasena incorrectos." };
+  }
+
+  await createUserSession(user.id);
+  redirect("/dashboard");
+}
+
+export async function setupAdminAction(_state: AuthActionState, formData: FormData): Promise<AuthActionState> {
+  const existingUsers = await prisma.user.count();
+  if (existingUsers > 0) {
+    return { error: "La aplicacion ya tiene usuarios. Inicia sesion para continuar." };
+  }
+
+  const parsed = userSchema.safeParse({ ...readForm(formData), role: "ADMIN" });
+  if (!parsed.success) {
+    return { error: "Revisa el nombre, usuario y contrasena. La contrasena debe tener al menos 8 caracteres." };
+  }
+
+  const usernameExists = await prisma.user.findUnique({ where: { username: parsed.data.username } });
+  if (usernameExists) {
+    return { error: "Ese usuario ya existe. Prueba con otro nombre de usuario." };
+  }
+
+  const user = await prisma.user.create({
+    data: {
+      name: parsed.data.name,
+      username: parsed.data.username,
+      passwordHash: await hashPassword(parsed.data.password),
+      role: "ADMIN",
+    },
+  });
+
+  await createUserSession(user.id);
+  redirect("/dashboard");
+}
+
+export async function logoutAction() {
+  await clearUserSession();
+  redirect("/login");
+}
+
+export async function createUserAction(formData: FormData) {
+  await requireAdmin();
+  const data = validate(userSchema, readForm(formData));
+  const usernameExists = await prisma.user.findUnique({ where: { username: data.username } });
+  if (usernameExists) {
+    redirect("/settings?error=username");
+  }
+
+  await prisma.user.create({
+    data: {
+      name: data.name,
+      username: data.username,
+      passwordHash: await hashPassword(data.password),
+      role: data.role,
+    },
+  });
+
+  revalidatePath("/settings");
+  redirect("/settings?saved=user");
+}
+
+export async function toggleUserStatusAction(userId: string) {
+  const currentUser = await requireAdmin();
+  if (currentUser.id === userId) {
+    redirect("/settings?error=self");
+  }
+
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) redirect("/settings?error=user");
+
+  await prisma.user.update({
+    where: { id: userId },
+    data: { isActive: !user.isActive },
+  });
+
+  if (user.isActive) {
+    await prisma.session.deleteMany({ where: { userId } });
+  }
+
+  revalidatePath("/settings");
+  redirect("/settings?saved=status");
+}
+
 export async function createStudentAction(formData: FormData) {
+  await requireEditor();
   const data = validate(studentSchema, readForm(formData));
   const student = await prisma.student.create({
     data: {
@@ -55,6 +160,7 @@ export async function createStudentAction(formData: FormData) {
 }
 
 export async function updateStudentAction(studentId: string, formData: FormData) {
+  await requireEditor();
   const data = validate(studentSchema, readForm(formData));
   await prisma.student.update({
     where: { id: studentId },
@@ -71,6 +177,7 @@ export async function updateStudentAction(studentId: string, formData: FormData)
 }
 
 export async function deleteStudentAction(studentId: string) {
+  await requireEditor();
   await prisma.student.update({
     where: { id: studentId },
     data: { deletedAt: new Date() },
@@ -82,6 +189,7 @@ export async function deleteStudentAction(studentId: string) {
 }
 
 export async function updateDiagnosticAction(studentId: string, formData: FormData) {
+  await requireEditor();
   const data = validate(diagnosticSchema, readForm(formData));
   await prisma.diagnosticEvaluation.upsert({
     where: { studentId },
@@ -95,6 +203,7 @@ export async function updateDiagnosticAction(studentId: string, formData: FormDa
 }
 
 export async function updateBehaviorAction(studentId: string, formData: FormData) {
+  await requireEditor();
   const data = validate(behaviorSchema, readForm(formData));
   await prisma.behaviorEvaluation.upsert({
     where: { studentId },
@@ -108,6 +217,7 @@ export async function updateBehaviorAction(studentId: string, formData: FormData
 }
 
 export async function updateInattentionAction(studentId: string, formData: FormData) {
+  await requireEditor();
   const data = validate(inattentionSchema, readForm(formData));
   await prisma.inattentionEvaluation.upsert({
     where: { studentId },
@@ -121,6 +231,7 @@ export async function updateInattentionAction(studentId: string, formData: FormD
 }
 
 export async function updateMathAction(studentId: string, formData: FormData) {
+  await requireEditor();
   const data = validate(mathSchema, readForm(formData));
   await prisma.mathEvaluation.upsert({
     where: { studentId },
@@ -134,6 +245,7 @@ export async function updateMathAction(studentId: string, formData: FormData) {
 }
 
 export async function createPlanAction(studentId: string, formData: FormData) {
+  await requireEditor();
   const uploadedFile = formData.get("attachmentFile");
   const attachment = uploadedFile instanceof File && uploadedFile.size > 0 ? await savePlanAttachment(uploadedFile) : null;
   const data = validate(planSchema, readForm(formData));
@@ -162,6 +274,7 @@ export async function createPlanAction(studentId: string, formData: FormData) {
 }
 
 export async function deletePlanAction(studentId: string, planId: string) {
+  await requireEditor();
   const plan = await prisma.pedagogicalPlan.findUnique({
     where: { id: planId },
     include: { attachments: true },
@@ -175,6 +288,7 @@ export async function deletePlanAction(studentId: string, planId: string) {
 }
 
 export async function deleteAttachmentAction(studentId: string, attachmentId: string) {
+  await requireEditor();
   const attachment = await prisma.attachment.delete({ where: { id: attachmentId } });
   await deleteStoredAttachment(attachment.fileUrl);
   await touchStudent(studentId);
@@ -183,6 +297,7 @@ export async function deleteAttachmentAction(studentId: string, attachmentId: st
 }
 
 export async function createProgressAction(studentId: string, formData: FormData) {
+  await requireEditor();
   const data = validate(progressSchema, readForm(formData));
   await prisma.progressRecord.create({
     data: { studentId, ...data },
@@ -194,6 +309,7 @@ export async function createProgressAction(studentId: string, formData: FormData
 }
 
 export async function deleteProgressAction(studentId: string, progressId: string) {
+  await requireEditor();
   await prisma.progressRecord.delete({ where: { id: progressId } });
   await touchStudent(studentId);
   revalidatePath(`/students/${studentId}`);
