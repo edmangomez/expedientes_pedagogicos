@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import { ArrowLeft, FileDown, Save } from "lucide-react";
 import { Badge } from "@/components/ui/Badge";
@@ -34,14 +32,13 @@ export function ExpedientHeader({ student }: { student: StudentWithRelations }) 
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
             Volver
           </Link>
-          <button
-            type="button"
-            onClick={() => window.print()}
+          <Link
+            href={`/students/${student.id}/export/pdf`}
             className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-stone-950 px-4 text-sm font-semibold text-white hover:bg-stone-800"
           >
             <FileDown className="h-4 w-4" aria-hidden="true" />
             Exportar PDF
-          </button>
+          </Link>
         </div>
       </div>
     </header>
